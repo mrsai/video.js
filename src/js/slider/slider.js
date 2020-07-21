@@ -147,6 +147,8 @@ class Slider extends Component {
   handleMouseDown(event) {
     const doc = this.bar.el_.ownerDocument;
 
+    // bysai
+    this._mouseDownTime = this.player_.currentTime();
     if (event.type === 'mousedown') {
       event.preventDefault();
     }
@@ -172,8 +174,8 @@ class Slider extends Component {
     this.on(doc, 'mouseup', this.handleMouseUp);
     this.on(doc, 'touchmove', this.handleMouseMove);
     this.on(doc, 'touchend', this.handleMouseUp);
-
     this.handleMouseMove(event);
+
   }
 
   /**
@@ -205,7 +207,6 @@ class Slider extends Component {
     const doc = this.bar.el_.ownerDocument;
 
     Dom.unblockTextSelection();
-
     this.removeClass('vjs-sliding');
     /**
      * Triggered when the slider is no longer in an active state.
@@ -214,15 +215,27 @@ class Slider extends Component {
      * @type {EventTarget~Event}
      */
     this.trigger('sliderinactive');
-
     this.off(doc, 'mousemove', this.handleMouseMove);
     this.off(doc, 'mouseup', this.handleMouseUp);
     this.off(doc, 'touchmove', this.handleMouseMove);
     this.off(doc, 'touchend', this.handleMouseUp);
-
     this.update();
-  }
+    // bysai
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.timer = setTimeout(()=>{
+      const start = this._mouseDownTime;
+      const end = this.player_.currentTime();
 
+      this.player_.seekData = {
+        start,
+        end
+      };
+      this.player_.trigger('seekedonce');
+      clearTimeout(this.timer);
+    });
+  }
   /**
    * Update the progress bar of the `Slider`.
    *

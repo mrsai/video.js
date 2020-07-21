@@ -174,6 +174,8 @@ class ProgressControl extends Component {
     const doc = this.el_.ownerDocument;
     const seekBar = this.getChild('seekBar');
 
+    // bysai
+    this._mouseDownTime = this.player_.currentTime();
     if (seekBar) {
       seekBar.handleMouseDown(event);
     }
